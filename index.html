@@ -120,16 +120,18 @@
             border-bottom: 2px solid var(--color-primario);
             position: relative;
             z-index: 10;
+            flex-wrap: wrap;
         }
         
         .tab-button {
             flex: 1;
-            padding: 20px;
+            min-width: 120px;
+            padding: 15px 10px;
             background: transparent;
             border: none;
             color: #cbd5e1;
             font-family: 'Crimson Pro', serif;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
@@ -156,6 +158,24 @@
             right: 0;
             height: 3px;
             background: #fff;
+        }
+        
+        /* Colores para las nuevas pestañas */
+        .tab-button:nth-child(3) { /* Mapa */
+            background: linear-gradient(90deg, #1e40af, #3b82f6);
+            color: white;
+        }
+        .tab-button:nth-child(4) { /* Línea de tiempo */
+            background: linear-gradient(90deg, #0f766e, #14b8a6);
+            color: white;
+        }
+        .tab-button:nth-child(5) { /* Radar */
+            background: linear-gradient(90deg, #7c3aed, #8b5cf6);
+            color: white;
+        }
+        .tab-button:nth-child(6) { /* Calculadora IDE */
+            background: linear-gradient(90deg, #c2410c, #f97316);
+            color: white;
         }
         
         /* ===== CONTENIDO DE PESTAÑAS ===== */
@@ -440,6 +460,68 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--color-secundario);
         }
+        
+        /* ===== ESTILOS PARA LA CALCULADORA IDE ===== */
+        #ideCalculatorApp textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        #ideCalculatorApp select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Animación para el indicador de IDE */
+        @keyframes pulseIDE {
+            0% { box-shadow: 0 0 5px white; }
+            50% { box-shadow: 0 0 15px white; }
+            100% { box-shadow: 0 0 5px white; }
+        }
+        
+        #ideIndicator {
+            animation: pulseIDE 2s infinite;
+        }
+        
+        /* Estilos para checkboxes personalizados */
+        #profileSelector input[type="checkbox"] {
+            accent-color: #3b82f6;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        /* Estilos para el slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            background: linear-gradient(90deg, #2c3e50, #e74c3c);
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            background: #3b82f6;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            cursor: pointer;
+        }
+        
+        /* Animaciones para modales */
+        @keyframes modalAppear {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        div[style*="position: fixed; top: 0; left: 0; width: 100%"] > div {
+            animation: modalAppear 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -456,6 +538,10 @@
         <div class="tabs">
             <button class="tab-button active" onclick="openTab('espectro3d')">🌌 Espectro 3D</button>
             <button class="tab-button" onclick="openTab('influencias')">🕸️ Red de Influencias</button>
+            <button class="tab-button" onclick="openTab('mapa')">🗺️ Mapa Geopolítico</button>
+            <button class="tab-button" onclick="openTab('timeline')">⏳ Línea de Tiempo</button>
+            <button class="tab-button" onclick="openTab('radar')">📊 Radar por Categoría</button>
+            <button class="tab-button" onclick="openTab('ideCalculator')">🧮 Calculadora IDE</button>
             <button class="tab-button" onclick="openTab('tabla')">📋 Tabla Completa</button>
             <button class="tab-button" onclick="openTab('qr')">🔗 Compartir</button>
         </div>
@@ -508,7 +594,202 @@
             </div>
         </div>
         
-        <!-- PESTAÑA 3: TABLA COMPLETA -->
+        <!-- PESTAÑA 3: MAPA GEOPOLÍTICO -->
+        <div id="mapa" class="tab-content">
+            <div class="graph-container">
+                <div class="graph-title">
+                    🗺️ Mapa Geopolítico del Síntoma Cuántico
+                </div>
+                
+                <div class="note">
+                    <div class="note-title">🌍 Cómo leer este mapa:</div>
+                    <p><strong>Color:</strong> Índice de Desviación Epistemológica (IDE) promedio por país. Más rojo = mayor desviación.</p>
+                    <p><strong>Click o hover:</strong> Muestra detalles del síntoma en cada región.</p>
+                    <p><strong>Fuente:</strong> Capítulo 10 - Geografías del Síntoma (Variantes Regionales).</p>
+                </div>
+                
+                <div class="graph-wrapper" id="plotMapa"></div>
+                
+                <!-- LEGENDA PARA EL MAPA -->
+                <div class="legend-grid" id="legendMapa" style="margin-top: 30px;">
+                    <!-- Se llena con JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- PESTAÑA 4: LÍNEA DE TIEMPO -->
+        <div id="timeline" class="tab-content">
+            <div class="graph-container">
+                <div class="graph-title">
+                    ⏳ Línea de Tiempo: Evolución del Síntoma Cuántico (1927-2024)
+                </div>
+                
+                <div class="note">
+                    <div class="note-title">🕰️ Cómo leer esta línea de tiempo:</div>
+                    <p><strong>Posición horizontal:</strong> Año del evento.</p>
+                    <p><strong>Posición vertical (altura):</strong> Impacto cultural (1-10).</p>
+                    <p><strong>Color:</strong> Tipo de evento (ver leyenda).</p>
+                    <p><strong>Tamaño:</strong> Relevancia en la evolución del síntoma.</p>
+                    <p><strong>Slider:</strong> Arrastra para explorar décadas específicas.</p>
+                </div>
+                
+                <!-- SLIDER PARA CONTROLAR EL RANGO DE AÑOS -->
+                <div style="margin: 30px 0; padding: 20px; background: rgba(30, 41, 59, 0.6); border-radius: 10px;">
+                    <label style="color: #3b82f6; font-weight: bold; margin-right: 15px;">🔍 Rango de años:</label>
+                    <input type="range" id="yearRange" min="1920" max="2030" value="1920" step="10" style="width: 80%;">
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                        <span style="color: #94a3b8;">1920</span>
+                        <span id="currentYear" style="color: #3b82f6; font-weight: bold;">1920-2030</span>
+                        <span style="color: #94a3b8;">2030</span>
+                    </div>
+                </div>
+                
+                <div class="graph-wrapper" id="plotTimeline"></div>
+                
+                <!-- LEYENDA DE CATEGORÍAS -->
+                <div class="legend-grid" id="legendTimeline" style="margin-top: 30px;">
+                    <!-- Se llena con JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- PESTAÑA 5: RADAR POR CATEGORÍA -->
+        <div id="radar" class="tab-content">
+            <div class="graph-container">
+                <div class="graph-title">
+                    📊 Análisis Comparativo: Perfiles del Síntoma Cuántico
+                </div>
+                
+                <div class="note">
+                    <div class="note-title">🎯 Cómo leer los diagramas de radar:</div>
+                    <p><strong>Radio (desde el centro):</strong> Valor en cada dimensión (0-10).</p>
+                    <p><strong>Área total:</strong> Representa el "perfil" completo de cada categoría.</p>
+                    <p><strong>Forma:</strong> Patrón característico de cada tipo de actor.</p>
+                    <p><strong>Selector:</strong> Elige qué perfiles comparar (máximo 3).</p>
+                </div>
+                
+                <!-- SELECTOR DE PERFILES -->
+                <div style="margin: 30px 0; padding: 20px; background: rgba(30, 41, 59, 0.6); border-radius: 10px;">
+                    <div style="color: #3b82f6; font-weight: bold; margin-bottom: 15px;">👥 Selecciona perfiles para comparar:</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;" id="profileSelector">
+                        <!-- Se llena con JavaScript -->
+                    </div>
+                    <button id="compareButton" class="copy-button" style="margin-top: 10px;">🔍 Comparar perfiles seleccionados</button>
+                    <p id="comparisonFeedback" style="margin-top: 15px; color: #10b981; display: none;"></p>
+                </div>
+                
+                <div class="graph-wrapper" id="plotRadar"></div>
+                
+                <!-- LEYENDA DE DIMENSIONES -->
+                <div class="legend-grid" id="legendRadar" style="margin-top: 30px;">
+                    <!-- Se llena con JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- PESTAÑA 6: CALCULADORA IDE -->
+        <div id="ideCalculator" class="tab-content">
+            <div class="graph-container">
+                <div class="graph-title">
+                    🧮 Calculadora del Índice de Desviación Epistemológica
+                </div>
+                
+                <div class="note">
+                    <div class="note-title">⚖️ Evalúa cualquier discurso "cuántico":</div>
+                    <p>Esta herramienta te permite calcular el IDE de cualquier discurso, libro o persona que use lenguaje "cuántico".</p>
+                    <p>Basado en los 5 criterios analizados en el ensayo:</p>
+                    <ol style="margin-left: 20px; color: #cbd5e1;">
+                        <li>Fidelidad a las matemáticas</li>
+                        <li>Respeto al contexto experimental</li>
+                        <li>Transparencia de intenciones</li>
+                        <li>Grado de literalización metafórica</li>
+                        <li>Impacto en la comprensión pública</li>
+                    </ol>
+                </div>
+                
+                <!-- INTERFAZ DE LA CALCULADORA -->
+                <div id="ideCalculatorApp" style="padding: 30px; background: rgba(30, 41, 59, 0.6); border-radius: 15px; margin-top: 20px;">
+                    <!-- ENTRADA DE TEXTO -->
+                    <div style="margin-bottom: 30px;">
+                        <label style="display: block; color: #3b82f6; font-weight: bold; margin-bottom: 10px;">📝 Ingresa un texto o frase para analizar:</label>
+                        <textarea id="ideTextInput" rows="4" style="width: 100%; padding: 15px; background: #0f172a; border: 2px solid #334155; border-radius: 10px; color: #e2e8f0; font-family: 'Crimson Pro', serif; font-size: 16px;" placeholder="Ejemplo: 'Tus pensamientos crean tu realidad cuántica' o 'El campo cuántico conecta todas las almas'"></textarea>
+                        <button onclick="analizarTextoIDE()" class="copy-button" style="margin-top: 15px;">🔍 Analizar texto</button>
+                    </div>
+                    
+                    <!-- SELECTOR DE CASOS PREDEFINIDOS -->
+                    <div style="margin-bottom: 30px;">
+                        <label style="display: block; color: #3b82f6; font-weight: bold; margin-bottom: 10px;">📚 O selecciona un caso predefinido:</label>
+                        <select id="ideCaseSelect" style="width: 100%; padding: 12px; background: #0f172a; border: 2px solid #334155; border-radius: 10px; color: #e2e8f0; font-family: 'Crimson Pro', serif; font-size: 16px;" onchange="cargarCasoPredefinido(this.value)">
+                            <option value="">-- Selecciona un caso del ensayo --</option>
+                            <option value="chopra">Deepak Chopra: "La curación cuántica"</option>
+                            <option value="dispenza">Joe Dispenza: "Meditación cuántica"</option>
+                            <option value="capra">Fritjof Capra: "El Tao de la Física"</option>
+                            <option value="zohar">Danah Zohar: "El Yo Cuántico"</option>
+                            <option value="bohr">Niels Bohr: Interpretación de Copenhague</option>
+                            <option value="twitter">Tweet viral: "La física cuántica confirma..."</option>
+                        </select>
+                    </div>
+                    
+                    <!-- RESULTADO -->
+                    <div id="ideResult" style="display: none; padding: 25px; background: rgba(15, 23, 42, 0.8); border-radius: 12px; margin-top: 30px; border-left: 5px solid #3b82f6;">
+                        <h3 style="color: #3b82f6; margin-bottom: 20px;">📊 Resultado del análisis:</h3>
+                        
+                        <!-- BARRA DE IDE -->
+                        <div style="margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="color: #94a3b8;">IDE calculado:</span>
+                                <span id="ideScore" style="color: #fff; font-weight: bold; font-size: 1.2rem;">0/10</span>
+                            </div>
+                            <div style="height: 30px; background: linear-gradient(90deg, #2c3e50, #3498db, #f39c12, #e74c3c, #c0392b); border-radius: 15px; position: relative;">
+                                <div id="ideIndicator" style="position: absolute; top: -5px; width: 4px; height: 40px; background: white; border-radius: 2px; box-shadow: 0 0 10px white; transition: left 1s ease;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.9rem; color: #94a3b8;">
+                                <span>0 (Ciencia)</span>
+                                <span>10 (Fabricación)</span>
+                            </div>
+                        </div>
+                        
+                        <!-- CATEGORÍA -->
+                        <div style="margin-bottom: 25px;">
+                            <div style="color: #94a3b8; margin-bottom: 5px;">Categoría:</div>
+                            <div id="ideCategory" style="padding: 10px 15px; border-radius: 8px; font-weight: bold; display: inline-block;"></div>
+                        </div>
+                        
+                        <!-- DESGLOSE POR DIMENSIONES -->
+                        <div style="margin-bottom: 25px;">
+                            <div style="color: #94a3b6; margin-bottom: 15px;">📈 Desglose por dimensiones:</div>
+                            <div id="ideDimensions" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                                <!-- Se llena con JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <!-- ANÁLISIS DETALLADO -->
+                        <div>
+                            <div style="color: #94a3b8; margin-bottom: 10px;">📖 Análisis detallado:</div>
+                            <div id="ideAnalysis" style="padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px; color: #cbd5e1; line-height: 1.6;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- EJEMPLOS DE USO -->
+                    <div class="note" style="margin-top: 30px;">
+                        <div class="note-title">💡 Ejemplos para probar:</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px;">
+                            <button onclick="cargarEjemplo('ej1')" class="copy-button" style="background: rgba(59, 130, 246, 0.2); font-size: 0.9rem; padding: 8px 12px;">
+                                "Tus pensamientos crean tu realidad"
+                            </button>
+                            <button onclick="cargarEjemplo('ej2')" class="copy-button" style="background: rgba(239, 68, 68, 0.2); font-size: 0.9rem; padding: 8px 12px;">
+                                "El campo cuántico conecta todas las almas"
+                            </button>
+                            <button onclick="cargarEjemplo('ej3')" class="copy-button" style="background: rgba(16, 185, 129, 0.2); font-size: 0.9rem; padding: 8px 12px;">
+                                "La observación afecta lo observado"
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PESTAÑA 7: TABLA COMPLETA -->
         <div id="tabla" class="tab-content">
             <div class="graph-container">
                 <div class="graph-title">
@@ -541,7 +822,7 @@
             </div>
         </div>
         
-        <!-- PESTAÑA 4: QR Y COMPARTIR -->
+        <!-- PESTAÑA 8: QR Y COMPARTIR -->
         <div id="qr" class="tab-content">
             <div class="graph-container">
                 <div class="graph-title">
@@ -590,10 +871,14 @@
                 Esta visualización acompaña al ensayo de investigación cultural. Los datos representan análisis epistemológico y no pretenden ser juicios legales.
             </p>
             <p style="margin-top: 20px;">
-                <a href="javascript:void(0)" onclick="openTab('espectro3d')" style="color: #3b82f6; text-decoration: none; margin: 0 10px;">Espectro 3D</a> | 
-                <a href="javascript:void(0)" onclick="openTab('influencias')" style="color: #3b82f6; text-decoration: none; margin: 0 10px;">Red de Influencias</a> | 
-                <a href="javascript:void(0)" onclick="openTab('tabla')" style="color: #3b82f6; text-decoration: none; margin: 0 10px;">Tabla Completa</a> | 
-                <a href="javascript:void(0)" onclick="openTab('qr')" style="color: #3b82f6; text-decoration: none; margin: 0 10px;">Compartir</a>
+                <a href="javascript:void(0)" onclick="openTab('espectro3d')" style="color: #3b82f6; text-decoration: none; margin: 0 10px;">🌌 3D</a> | 
+                <a href="javascript:void(0)" onclick="openTab('influencias')" style="color: #3b82f6; text-decoration: none; margin: 0 10px;">🕸️ Red</a> | 
+                <a href="javascript:void(0)" onclick="openTab('mapa')" style="color: #3b82f6; text-decoration: none; margin: 0 10px;">🗺️ Mapa</a> | 
+                <a href="javascript:void(0)" onclick="openTab('timeline')" style="color: #3b82f6; text-decoration: none; margin: 0 10px;">⏳ Tiempo</a> | 
+                <a href="javascript:void(0)" onclick="openTab('radar')" style="color: #3b82f6; text-decoration: none; margin: 0 10px;">📊 Radar</a> | 
+                <a href="javascript:void(0)" onclick="openTab('ideCalculator')" style="color: #3b82f6; text-decoration: none; margin: 0 10px;">🧮 IDE</a> | 
+                <a href="javascript:void(0)" onclick="openTab('tabla')" style="color: #3b82f6; text-decoration: none; margin: 0 10px;">📋 Tabla</a> | 
+                <a href="javascript:void(0)" onclick="openTab('qr')" style="color: #3b82f6; text-decoration: none; margin: 0 10px;">🔗 Compartir</a>
             </p>
             <p style="margin-top: 15px; font-size: 0.85rem; color: #475569;">
                 Visualización creada con Plotly.js | Publicación recomendada: GitHub Pages | Fuentes: Google Fonts
@@ -876,6 +1161,690 @@
         };
         
         // ================================================
+        // DATOS PARA EL MAPA GEOPOLÍTICO
+        // ================================================
+        
+        const datosMapa = [
+            {pais: "Argentina", codigo: "ARG", ide_promedio: 7.2, caracteristica: "Sincretismo católico-new age", 
+             casos: ["Claudio María Domínguez", "Máximo Rabino", "Víctor Brossa"], cap: "Cap. 10 - Latinoamérica"},
+            
+            {pais: "Estados Unidos", codigo: "USA", ide_promedio: 6.8, caracteristica: "Mercantilización wellness", 
+             casos: ["Deepak Chopra", "Joe Dispenza", "Timothy Leary", "Gregg Braden"], cap: "Cap. 2, 7"},
+            
+            {pais: "India", codigo: "IND", ide_promedio: 6.5, caracteristica: "Reimportación con credenciales", 
+             casos: ["Maharishi Mahesh Yogi", "Amit Goswami", "Deepak Chopra"], cap: "Cap. 10 - Asia"},
+            
+            {pais: "Alemania", codigo: "DEU", ide_promedio: 5.2, caracteristica: "Sistematización burocrática", 
+             casos: ["Rüdiger Dahlke", "Estudios académicos 'light'"], cap: "Cap. 10 - Europa"},
+            
+            {pais: "Brasil", codigo: "BRA", ide_promedio: 7.5, caracteristica: "Sincretismo religioso masivo", 
+             casos: ["José Trigueirinho", "Movimiento espírita-cuántico"], cap: "Cap. 10 - Latinoamérica"},
+            
+            {pais: "Rusia", codigo: "RUS", ide_promedio: 6.9, caracteristica: "Post-soviético místico", 
+             casos: ["Vadim Zeland (Transurfing)", "Física cuántica esotérica"], cap: "Cap. 10 - Postsoviético"},
+            
+            {pais: "Japón", codigo: "JPN", ide_promedio: 5.8, caracteristica: "Estetización del vacío", 
+             casos: ["Aplicación Kokoro", "Libro 'Quantum Wa'"], cap: "Cap. 10 - Asia"},
+            
+            {pais: "Francia", codigo: "FRA", ide_promedio: 5.5, caracteristica: "Resistencia intelectual", 
+             casos: ["Bernard Werber", "Crítica posmoderna"], cap: "Cap. 10 - Europa"},
+            
+            {pais: "Sudáfrica", codigo: "ZAF", ide_promedio: 6.0, caracteristica: "Descolonización epistemológica", 
+             casos: ["Mogobe Ramose", "Ubuntu cuántico"], cap: "Cap. 10 - África"},
+            
+            {pais: "México", codigo: "MEX", ide_promedio: 7.0, caracteristica: "Arraigo territorial", 
+             casos: ["Temazcal cuántico", "Chamanismo digital"], cap: "Cap. 10 - Latinoamérica"},
+            
+            {pais: "Reino Unido", codigo: "GBR", ide_promedio: 6.2, caracteristica: "New Age académico", 
+             casos: ["Danah Zohar", "Revistas de espiritualidad"], cap: "Cap. 2, 3"},
+            
+            {pais: "Australia", codigo: "AUS", ide_promedio: 6.5, caracteristica: "Espiritualidad ecológica", 
+             casos: ["Retiros wellness", "Fusión new age-ecologismo"], cap: "Cap. 10 - Global"},
+            
+            {pais: "España", codigo: "ESP", ide_promedio: 6.8, caracteristica: "Fusión new age-mediterránea", 
+             casos: ["Víctor Brossa", "Enric Corbera (Biodescodificación)"], cap: "Cap. 10 - Europa"}
+        ];
+        
+        // Función para obtener color por IDE (para el mapa)
+        function getColorForMap(ide) {
+            if (ide <= 4) return '#2c3e50';     // Azul oscuro: bajo IDE
+            if (ide <= 6) return '#f39c12';     // Naranja: medio
+            if (ide <= 8) return '#e74c3c';     // Rojo: alto
+            return '#c0392b';                   // Rojo oscuro: muy alto
+        }
+        
+        // ================================================
+        // CREAR MAPA GEOPOLÍTICO
+        // ================================================
+        
+        let mapaCreado = false;
+        
+        function crearMapa() {
+            if (mapaCreado) return;
+            
+            // Generar arrays para Plotly
+            const locations = datosMapa.map(d => d.codigo);
+            const z = datosMapa.map(d => d.ide_promedio);
+            const text = datosMapa.map(d => 
+                `<b>${d.pais}</b><br>` +
+                `<b>IDE promedio:</b> ${d.ide_promedio}/10<br>` +
+                `<b>Característica:</b> ${d.caracteristica}<br>` +
+                `<b>Casos emblemáticos:</b> ${d.casos.join(', ')}<br>` +
+                `<b>Fuente en ensayo:</b> ${d.cap}<br>` +
+                `<i>Click para más detalles</i>`
+            );
+            
+            const traceMapa = {
+                type: 'choropleth',
+                locationmode: 'ISO-3',
+                locations: locations,
+                z: z,
+                text: text,
+                hoverinfo: 'text',
+                colorscale: [
+                    [0, '#2c3e50'],    // Rigor científico (bajo IDE)
+                    [0.33, '#3498db'], // Divulgación
+                    [0.66, '#f39c12'], // Especulación
+                    [1, '#c0392b']     // Fabricación (alto IDE)
+                ],
+                showscale: true,
+                colorbar: {
+                    title: 'IDE promedio',
+                    thickness: 20,
+                    len: 0.75,
+                    tickvals: [4, 6, 8, 10],
+                    ticktext: ['Bajo (4)', 'Medio (6)', 'Alto (8)', 'Muy alto (10)']
+                },
+                marker: {
+                    line: {
+                        color: '#0f172a',
+                        width: 1
+                    }
+                }
+            };
+            
+            const layoutMapa = {
+                title: {
+                    text: 'DISTRIBUCIÓN GLOBAL DEL SÍNTOMA CUÁNTICO (2024)',
+                    font: { 
+                        color: '#3b82f6', 
+                        size: 26,
+                        family: 'Playfair Display, serif'
+                    }
+                },
+                geo: {
+                    showframe: false,
+                    showcoastlines: true,
+                    projection: {
+                        type: 'natural earth'
+                    },
+                    bgcolor: 'rgba(0,0,0,0)',
+                    landcolor: '#1e293b',
+                    coastlinecolor: '#475569',
+                    lakecolor: '#0f172a',
+                    oceancolor: '#0f172a',
+                    countrycolor: '#475569',
+                    countrywidth: 1,
+                    showcountries: true,
+                    showocean: true,
+                    showland: true,
+                    showlakes: true,
+                    showrivers: false,
+                    lataxis: {range: [-55, 70]},
+                    lonaxis: {range: [-180, 180]}
+                },
+                margin: { l: 0, r: 0, b: 0, t: 80 },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                width: 1200,
+                height: 700,
+                dragmode: false
+            };
+            
+            Plotly.newPlot('plotMapa', [traceMapa], layoutMapa, { 
+                responsive: true,
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['lasso2d', 'select2d']
+            });
+            
+            mapaCreado = true;
+            
+            // Generar leyenda para el mapa
+            generarLeyendaMapa();
+            
+            // Agregar interactividad
+            document.getElementById('plotMapa').on('plotly_click', function(data) {
+                const punto = data.points[0];
+                const paisIndex = locations.indexOf(punto.location);
+                const paisData = datosMapa[paisIndex];
+                
+                mostrarModalPais(paisData);
+            });
+        }
+        
+        // ================================================
+        // FUNCIÓN PARA GENERAR LEYENDA DEL MAPA
+        // ================================================
+        
+        function generarLeyendaMapa() {
+            const legendContainer = document.getElementById('legendMapa');
+            const legendData = [
+                { rango: "IDE 0-4", desc: "Baja penetración / Rigor científico", color: '#2c3e50', ejemplos: "Alemania, Francia" },
+                { rango: "IDE 4-6", desc: "Penetración moderada / Especulación académica", color: '#3498db', ejemplos: "Japón, Reino Unido" },
+                { rango: "IDE 6-8", desc: "Alta penetración / Oportunismo espiritual", color: '#f39c12', ejemplos: "EEUU, India, España" },
+                { rango: "IDE 8-10", desc: "Penetración muy alta / Fabricación masiva", color: '#c0392b', ejemplos: "Argentina, Brasil, Rusia" }
+            ];
+            
+            legendContainer.innerHTML = legendData.map(item => `
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: ${item.color};"></div>
+                    <div class="legend-text">
+                        <div class="legend-range">${item.rango}</div>
+                        <div class="legend-desc">
+                            ${item.desc}<br>
+                            <small style="color: #94a3b8; font-size: 0.85rem;">Ejemplos: ${item.ejemplos}</small>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // ================================================
+        // DATOS PARA LA LÍNEA DE TIEMPO
+        // ================================================
+        
+        const hitos = [
+            // === FUNDACIÓN CIENTÍFICA ===
+            {año: 1927, evento: "Interpretación de Copenhague", impacto: 3, tipo: "ciencia", 
+             desc: "Bohr y Heisenberg establecen el marco interpretativo austero que deja un vacío narrativo.", icono: "🔬"},
+            
+            // === PRECURSORES CULTURALES ===
+            {año: 1960, evento: "Alan Watts populariza el misticismo oriental", impacto: 6, tipo: "precursor", 
+             desc: "Prepara el terreno cultural para la fusión ciencia-espiritualidad.", icono: "🧘"},
+            
+            // === CONTRACULTURA ===
+            {año: 1975, evento: "El Tao de la Física (Fritjof Capra)", impacto: 8, tipo: "traducción", 
+             desc: "Primer bestseller que propone convergencia entre física cuántica y misticismo oriental.", icono: "📖"},
+            {año: 1975, evento: "Seminarios est de Werner Erhard", impacto: 7, tipo: "comercial", 
+             desc: "Industrialización de la 'iluminación personal' con jerga cuántica.", icono: "💼"},
+            
+            // === ACADEMIZACIÓN LIGHT ===
+            {año: 1990, evento: "El Yo Cuántico (Danah Zohar)", impacto: 7, tipo: "pseudoacadémico", 
+             desc: "Da respetabilidad intelectual al síntoma con credenciales del MIT.", icono: "🎓"},
+            {año: 1996, evento: "Escándalo Sokal", impacto: 5, tipo: "crítica", 
+             desc: "Revela el vaciamiento del lenguaje científico en estudios culturales.", icono: "⚡"},
+            
+            // === MERCANTILIZACIÓN MASIVA ===
+            {año: 2000, evento: "Deepak Chopra alcanza fama global", impacto: 9, tipo: "comercial", 
+             desc: "Sintetiza Ayurveda, cuántica y autoayuda en imperio multimillonario.", icono: "💰"},
+            {año: 2004, evento: "Documental '¿Y tú qué sabes?'", impacto: 8, tipo: "masivo", 
+             desc: "Lleva el síntoma al cine mainstream con 16M en taquilla.", icono: "🎬"},
+            
+            // === DIGITALIZACIÓN ===
+            {año: 2010, evento: "Explosión de blogs y foros new age", impacto: 7, tipo: "digital", 
+             desc: "El síntoma migra a internet, democratizándose y fragmentándose.", icono: "💻"},
+            {año: 2015, evento: "Joe Dispenza viral en redes sociales", impacto: 8, tipo: "digital", 
+             desc: "Neurociencia pop + cuántica = retiros de $5,000 por persona.", icono: "🧠"},
+            {año: 2020, evento: "TikTok y #quantumhealing", impacto: 9, tipo: "viral", 
+             desc: "El síntoma se atomiza en micro-contenidos de 15 segundos.", icono: "⚡"},
+            {año: 2023, evento: "ChatGPT y generación de contenido cuántico", impacto: 6, tipo: "IA", 
+             desc: "IA produce contenido pseudocientífico a escala industrial.", icono: "🤖"},
+            
+            // === FUTURO PROYECTADO ===
+            {año: 2025, evento: "Realidad aumentada + espiritualidad cuántica", impacto: 5, tipo: "futuro", 
+             desc: "Proyección: gafes AR para 'ver campos cuánticos'.", icono: "👓"},
+            {año: 2030, evento: "Neurotecnología + manifestación cuántica", impacto: 4, tipo: "futuro", 
+             desc: "Proyección: dispositivos que 'sincronizan ondas cerebrales con el campo cuántico'.", icono: "🔮"}
+        ];
+        
+        // Colores por tipo de evento
+        const coloresTipo = {
+            "ciencia": "#2c3e50",       // Azul oscuro
+            "precursor": "#3498db",     // Azul
+            "traducción": "#f39c12",    // Naranja
+            "pseudoacadémico": "#9b59b6", // Púrpura
+            "comercial": "#e74c3c",     // Rojo
+            "crítica": "#1abc9c",       // Turquesa
+            "masivo": "#e67e22",        // Naranja oscuro
+            "digital": "#3498db",       // Azul
+            "viral": "#f1c40f",         // Amarillo
+            "IA": "#7f8c8d",            // Gris
+            "futuro": "#95a5a6"         // Gris claro
+        };
+        
+        // ================================================
+        // CREAR LÍNEA DE TIEMPO INTERACTIVA
+        // ================================================
+        
+        let timelineCreado = false;
+        
+        function crearTimeline() {
+            if (timelineCreado) return;
+            
+            // Preparar datos para Plotly
+            const x = hitos.map(h => h.año);
+            const y = hitos.map(h => h.impacto);
+            const colores = hitos.map(h => coloresTipo[h.tipo]);
+            const textos = hitos.map(h => 
+                `<b>${h.año}: ${h.evento}</b><br>` +
+                `<b>Impacto:</b> ${h.impacto}/10<br>` +
+                `<b>Tipo:</b> ${h.tipo}<br>` +
+                `<b>Descripción:</b> ${h.desc}<br>` +
+                `<i>Click para más detalles</i>`
+            );
+            
+            const traceTimeline = {
+                x: x,
+                y: y,
+                mode: 'markers+lines+text',
+                type: 'scatter',
+                marker: {
+                    size: hitos.map(h => 15 + h.impacto * 2), // Tamaño según impacto
+                    color: colores,
+                    symbol: hitos.map(h => {
+                        // Símbolos diferentes por década
+                        if (h.año < 1960) return 'circle';
+                        if (h.año < 1990) return 'diamond';
+                        if (h.año < 2010) return 'square';
+                        return 'star';
+                    }),
+                    line: { width: 2, color: 'white' }
+                },
+                line: {
+                    color: 'rgba(59, 130, 246, 0.3)',
+                    width: 2,
+                    dash: 'dot'
+                },
+                text: hitos.map(h => h.icono + ' ' + h.evento.substring(0, 20) + '...'),
+                textposition: 'top center',
+                textfont: { 
+                    size: 10, 
+                    color: '#cbd5e1',
+                    family: 'Crimson Pro, serif'
+                },
+                hovertemplate: textos,
+                customdata: hitos.map((h, i) => ({ indice: i }))
+            };
+            
+            const layoutTimeline = {
+                title: {
+                    text: 'EVOLUCIÓN TEMPORAL DEL SÍNTOMA CUÁNTICO (1927-2024)',
+                    font: { 
+                        color: '#3b82f6', 
+                        size: 26,
+                        family: 'Playfair Display, serif'
+                    }
+                },
+                xaxis: {
+                    title: { 
+                        text: 'AÑO', 
+                        font: { color: '#e2e8f0', size: 16, family: 'Crimson Pro, serif' }
+                    },
+                    range: [1920, 2030],
+                    gridcolor: '#334155',
+                    color: '#94a3b8',
+                    tickvals: [1927, 1960, 1975, 1990, 2000, 2010, 2020, 2030],
+                    ticktext: ['1927<br>Copenhague', '1960<br>Precursores', '1975<br>Contracultura', '1990<br>Academización', 
+                              '2000<br>Mercado', '2010<br>Digital', '2020<br>Viral', '2030<br>Futuro']
+                },
+                yaxis: {
+                    title: { 
+                        text: 'IMPACTO CULTURAL (1-10)', 
+                        font: { color: '#e2e8f0', size: 16, family: 'Crimson Pro, serif' }
+                    },
+                    range: [0, 10.5],
+                    gridcolor: '#334155',
+                    color: '#94a3b8'
+                },
+                hovermode: 'closest',
+                margin: { l: 80, r: 30, b: 80, t: 100 },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                showlegend: false,
+                shapes: [
+                    // Líneas verticales por década
+                    {type: 'line', x0: 1920, x1: 1920, y0: 0, y1: 10, line: {color: '#475569', width: 1, dash: 'dot'}},
+                    {type: 'line', x0: 1970, x1: 1970, y0: 0, y1: 10, line: {color: '#475569', width: 1, dash: 'dot'}},
+                    {type: 'line', x0: 2000, x1: 2000, y0: 0, y1: 10, line: {color: '#475569', width: 1, dash: 'dot'}},
+                    {type: 'line', x0: 2020, x1: 2020, y0: 0, y1: 10, line: {color: '#475569', width: 1, dash: 'dot'}}
+                ],
+                annotations: [
+                    // Etiquetas de eras
+                    {x: 1945, y: 9.5, text: 'ERA CIENTÍFICA', showarrow: false, font: {color: '#2c3e50', size: 12}},
+                    {x: 1985, y: 9.5, text: 'ERA CONTRACULTURAL', showarrow: false, font: {color: '#f39c12', size: 12}},
+                    {x: 2010, y: 9.5, text: 'ERA COMERCIAL', showarrow: false, font: {color: '#e74c3c', size: 12}},
+                    {x: 2025, y: 9.5, text: 'ERA DIGITAL', showarrow: false, font: {color: '#3498db', size: 12}}
+                ]
+            };
+            
+            Plotly.newPlot('plotTimeline', [traceTimeline], layoutTimeline, { 
+                responsive: true,
+                displayModeBar: true
+            });
+            
+            timelineCreado = true;
+            
+            // Generar leyenda para la línea de tiempo
+            generarLeyendaTimeline();
+            
+            // Configurar interacción del slider
+            document.getElementById('yearRange').addEventListener('input', function(e) {
+                const yearStart = parseInt(e.target.value);
+                const yearEnd = Math.min(yearStart + 30, 2030);
+                
+                document.getElementById('currentYear').textContent = `${yearStart}-${yearEnd}`;
+                
+                Plotly.relayout('plotTimeline', {
+                    'xaxis.range': [yearStart, yearEnd]
+                });
+            });
+            
+            // Configurar click en los puntos
+            document.getElementById('plotTimeline').on('plotly_click', function(data) {
+                const punto = data.points[0];
+                const hitoIndex = punto.customdata.indice;
+                const hitoData = hitos[hitoIndex];
+                
+                mostrarModalHito(hitoData);
+            });
+        }
+        
+        // ================================================
+        // FUNCIÓN PARA GENERAR LEYENDA DE LA LÍNEA DE TIEMPO
+        // ================================================
+        
+        function generarLeyendaTimeline() {
+            const tiposUnicos = [...new Set(hitos.map(h => h.tipo))];
+            
+            const legendContainer = document.getElementById('legendTimeline');
+            legendContainer.innerHTML = tiposUnicos.map(tipo => `
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: ${coloresTipo[tipo]};"></div>
+                    <div class="legend-text">
+                        <div class="legend-range">${tipo.toUpperCase()}</div>
+                        <div class="legend-desc">
+                            ${hitos.filter(h => h.tipo === tipo).length} evento(s)
+                            ${tipo === 'futuro' ? '(proyecciones)' : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // ================================================
+        // DATOS PARA EL DIAGRAMA DE RADAR
+        // ================================================
+        
+        const perfilesRadar = {
+            "cientifico": {
+                nombre: "Científico riguroso",
+                ejemplo: "Niels Bohr",
+                color: "#2c3e50",
+                valores: {
+                    rigor: 9.5,
+                    alcance: 3.0,
+                    comercial: 1.0,
+                    influencia: 8.0,
+                    duracion: 8.0,
+                    especulacion: 1.0
+                }
+            },
+            "traductor": {
+                nombre: "Traductor poético",
+                ejemplo: "Fritjof Capra",
+                color: "#f39c12",
+                valores: {
+                    rigor: 4.0,
+                    alcance: 8.0,
+                    comercial: 6.0,
+                    influencia: 7.0,
+                    duracion: 7.0,
+                    especulacion: 6.0
+                }
+            },
+            "comercial": {
+                nombre: "Estratega comercial",
+                ejemplo: "Deepak Chopra",
+                color: "#e74c3c",
+                valores: {
+                    rigor: 1.0,
+                    alcance: 10.0,
+                    comercial: 10.0,
+                    influencia: 9.0,
+                    duracion: 9.0,
+                    especulacion: 8.0
+                }
+            },
+            "digital": {
+                nombre: "Viralizador digital",
+                ejemplo: "Influencer promedio",
+                color: "#3498db",
+                valores: {
+                    rigor: 0.5,
+                    alcance: 7.0,
+                    comercial: 9.0,
+                    influencia: 5.0,
+                    duracion: 3.0,
+                    especulacion: 9.5
+                }
+            },
+            "academico": {
+                nombre: "Académico light",
+                ejemplo: "Danah Zohar",
+                color: "#9b59b6",
+                valores: {
+                    rigor: 3.0,
+                    alcance: 7.0,
+                    comercial: 4.0,
+                    influencia: 6.0,
+                    duracion: 5.0,
+                    especulacion: 7.0
+                }
+            }
+        };
+        
+        // Dimensiones para el radar
+        const dimensionesRadar = [
+            {nombre: "Rigor científico", desc: "Fidelidad al método y evidencia científica"},
+            {nombre: "Alcance mediático", desc: "Capacidad de llegar a audiencias masivas"},
+            {nombre: "Intencionalidad comercial", desc: "Uso del discurso para fines económicos"},
+            {nombre: "Influencia en otros", desc: "Impacto en la formación de nuevos actores"},
+            {nombre: "Duración del impacto", desc: "Persistencia temporal de su influencia"},
+            {nombre: "Grado de especulación", desc: "Uso de afirmaciones no verificables"}
+        ];
+        
+        // ================================================
+        // CREAR DIAGRAMA DE RADAR INTERACTIVO
+        // ================================================
+        
+        let radarCreado = false;
+        
+        function crearRadar(perfilesSeleccionados = ["cientifico", "comercial", "digital"]) {
+            const traces = perfilesSeleccionados.map(perfilKey => {
+                const perfil = perfilesRadar[perfilKey];
+                const valores = dimensionesRadar.map(d => perfil.valores[d.nombre.split(' ')[0].toLowerCase()]);
+                
+                return {
+                    type: 'scatterpolar',
+                    r: [...valores, valores[0]], // Cerrar el polígono
+                    theta: [...dimensionesRadar.map(d => d.nombre), dimensionesRadar[0].nombre], // Cerrar el polígono
+                    fill: 'toself',
+                    fillcolor: `${perfil.color}40`, // 25% de opacidad
+                    line: {color: perfil.color, width: 3},
+                    name: perfil.nombre,
+                    hovertemplate: `<b>${perfil.nombre}</b><br>%{theta}: %{r:.1f}/10<extra></extra>`,
+                    text: [`Ejemplo: ${perfil.ejemplo}`],
+                    textposition: 'top center'
+                };
+            });
+            
+            const layoutRadar = {
+                title: {
+                    text: 'PERFILES COMPARATIVOS DEL SÍNTOMA CUÁNTICO',
+                    font: { 
+                        color: '#3b82f6', 
+                        size: 26,
+                        family: 'Playfair Display, serif'
+                    }
+                },
+                polar: {
+                    radialaxis: {
+                        visible: true,
+                        range: [0, 10],
+                        tickvals: [0, 2, 4, 6, 8, 10],
+                        ticktext: ['0', '2', '4', '6', '8', '10'],
+                        color: '#94a3b8',
+                        gridcolor: '#334155',
+                        linecolor: '#475569'
+                    },
+                    angularaxis: {
+                        color: '#94a3b8',
+                        gridcolor: '#334155'
+                    },
+                    bgcolor: 'rgba(0,0,0,0)'
+                },
+                margin: { l: 80, r: 80, b: 80, t: 100 },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                showlegend: true,
+                legend: {
+                    x: 0.8,
+                    y: 0.1,
+                    bgcolor: 'rgba(30, 41, 59, 0.8)',
+                    bordercolor: '#3b82f6',
+                    borderwidth: 1,
+                    font: {color: '#e2e8f0', family: 'Crimson Pro, serif'}
+                }
+            };
+            
+            Plotly.newPlot('plotRadar', traces, layoutRadar, { 
+                responsive: true,
+                displayModeBar: true
+            });
+            
+            radarCreado = true;
+            
+            // Generar selector de perfiles
+            generarSelectorPerfiles();
+            
+            // Generar leyenda de dimensiones
+            generarLeyendaRadar();
+        }
+        
+        // ================================================
+        // CALCULADORA IDE - LÓGICA PRINCIPAL
+        // ================================================
+        
+        // Casos predefinidos del ensayo
+        const casosIDE = {
+            chopra: {
+                texto: "La curación cuántica utiliza el campo de energía universal para sanar el cuerpo a nivel celular mediante la intención consciente.",
+                ide: 9.2,
+                categoria: "Fabricación total",
+                color: "#c0392b",
+                dimensiones: {
+                    matematica: 0.5,
+                    contexto: 0.3,
+                    transparencia: 1.0,
+                    metafora: 9.8,
+                    impacto: 9.5
+                },
+                analisis: "Chopra toma términos científicos ('campo', 'cuántico', 'celular') y los aplica a procesos biológicos sin evidencia. La metáfora se presenta como mecanismo real."
+            },
+            dispenza: {
+                texto: "La meditación cuántica permite reprogramar tu ADN y crear nuevas realidades neuronales mediante la coherencia cardiaca y el campo cuántico.",
+                ide: 8.8,
+                categoria: "Comercialización avanzada",
+                color: "#e74c3c",
+                dimensiones: {
+                    matematica: 1.0,
+                    contexto: 0.5,
+                    transparencia: 1.5,
+                    metafora: 9.5,
+                    impacto: 9.0
+                },
+                analisis: "Mezcla neurociencia pop con jerga cuántica. Ofrece transformación biológica mágica sin mecanismos verificables."
+            },
+            capra: {
+                texto: "La física cuántica y el misticismo oriental convergen en una visión holística del universo donde todo está interconectado.",
+                ide: 5.5,
+                categoria: "Especulación problemática",
+                color: "#f39c12",
+                dimensiones: {
+                    matematica: 3.0,
+                    contexto: 4.0,
+                    transparencia: 6.0,
+                    metafora: 8.0,
+                    impacto: 7.0
+                },
+                analisis: "Analogías poéticas que confunden isomorfismo lingüístico con identidad ontológica. Bienintencionado pero epistemológicamente problemático."
+            },
+            zohar: {
+                texto: "La conciencia opera como un sistema cuántico, con superposición de estados y colapso mediante la atención.",
+                ide: 5.0,
+                categoria: "Especulación académica",
+                color: "#9b59b6",
+                dimensiones: {
+                    matematica: 4.0,
+                    contexto: 3.5,
+                    transparencia: 5.0,
+                    metafora: 7.5,
+                    impacto: 6.0
+                },
+                analisis: "Especulación filosófica con credenciales académicas. Confunde analogía sugerente con explicación científica."
+            },
+            bohr: {
+                texto: "La función de onda describe probabilidades, no realidades. La medición es un ingrediente fundamental, no un accidente.",
+                ide: 0.5,
+                categoria: "Ciencia rigurosa",
+                color: "#2c3e50",
+                dimensiones: {
+                    matematica: 9.5,
+                    contexto: 9.8,
+                    transparencia: 9.0,
+                    metafora: 1.0,
+                    impacto: 8.0
+                },
+                analisis: "Lenguaje preciso, matemáticas verificables, contexto experimental claro. Austeridad epistemológica."
+            },
+            twitter: {
+                texto: "La física cuántica lo confirma: el observador afecta lo observado. Tus pensamientos literalmente configuran tu realidad. #leydeatracción",
+                ide: 9.5,
+                categoria: "Fabricación viral",
+                color: "#7b241c",
+                dimensiones: {
+                    matematica: 0.2,
+                    contexto: 0.1,
+                    transparencia: 1.0,
+                    metafora: 9.9,
+                    impacto: 8.5
+                },
+                analisis: "Extracción brutal de principio complejo, descontextualización total, literalización de metáfora, llamado emocional. Ejemplo de síntoma en estado puro."
+            }
+        };
+        
+        // Palabras clave y sus pesos para análisis automático
+        const palabrasClave = {
+            // Términos científicos reales (bajan IDE)
+            "función de onda": -2, "ecuación de Schrödinger": -3, "decoherencia": -2, 
+            "entrelazamiento": -1, "principio de incertidumbre": -1, "experimento de doble rendija": -2,
+            
+            // Términos abusados (suben IDE)
+            "crea tu realidad": 3, "ley de atracción": 3, "manifestación": 2, "vibración": 2,
+            "energía universal": 2, "conciencia cuántica": 3, "sanación cuántica": 3,
+            "campo cuántico": 1, "salto cuántico": 1, "realidad cuántica": 2,
+            
+            // Patrones problemáticos
+            "literalmente": 2, "confirma": 1, "demuestra": 1, "prueba": 1,
+            
+            // Contexto (bajan IDE si aparecen juntos)
+            "laboratorio": -1, "experimento": -1, "matemática": -1, "verificación": -1,
+            
+            // Intencionalidad comercial (suben IDE)
+            "compra": 2, "curso": 2, "seminario": 2, "retiro": 2, "transformación": 1
+        };
+        
+        // ================================================
         // FUNCIONES DE INTERFAZ
         // ================================================
         
@@ -900,11 +1869,22 @@
             event.currentTarget.classList.add('active');
             
             // Redibujar gráficos si es necesario
-            if (tabName === 'espectro3d') {
-                setTimeout(() => Plotly.Plots.resize(document.getElementById('plot3d')), 100);
-            } else if (tabName === 'influencias') {
-                setTimeout(() => Plotly.Plots.resize(document.getElementById('plotSankey')), 100);
-            }
+            setTimeout(() => {
+                if (tabName === 'espectro3d') {
+                    Plotly.Plots.resize(document.getElementById('plot3d'));
+                } else if (tabName === 'influencias') {
+                    Plotly.Plots.resize(document.getElementById('plotSankey'));
+                } else if (tabName === 'mapa') {
+                    crearMapa();
+                    Plotly.Plots.resize(document.getElementById('plotMapa'));
+                } else if (tabName === 'timeline') {
+                    crearTimeline();
+                    Plotly.Plots.resize(document.getElementById('plotTimeline'));
+                } else if (tabName === 'radar') {
+                    crearRadar();
+                    Plotly.Plots.resize(document.getElementById('plotRadar'));
+                }
+            }, 100);
         }
         
         // Función para llenar la tabla
@@ -986,6 +1966,389 @@
         }
         
         // ================================================
+        // FUNCIONES PARA LA CALCULADORA IDE
+        // ================================================
+        
+        // Función para analizar texto automáticamente
+        function analizarTextoIDE() {
+            const texto = document.getElementById('ideTextInput').value.trim();
+            
+            if (!texto) {
+                alert("Por favor, ingresa un texto para analizar.");
+                return;
+            }
+            
+            // Análisis básico (simplificado)
+            let score = 5; // Punto medio por defecto
+            
+            // Análisis de palabras clave
+            let indicadores = [];
+            
+            Object.keys(palabrasClave).forEach(palabra => {
+                const regex = new RegExp(palabra, 'gi');
+                const matches = texto.match(regex);
+                if (matches) {
+                    const peso = palabrasClave[palabra] * matches.length;
+                    score += peso / 10; // Ajustar impacto
+                    indicadores.push({palabra, peso, veces: matches.length});
+                }
+            });
+            
+            // Ajustar por longitud y características
+            const longitud = texto.length;
+            const tieneSignos = texto.includes('!') || texto.includes('#') || texto.includes('$');
+            const esImperativo = /(debes|tienes que|necesitas|deberías)/gi.test(texto);
+            
+            if (tieneSignos) score += 0.5;
+            if (esImperativo) score += 0.5;
+            if (longitud < 50) score += 1; // Los eslóganes cortos suelen tener IDE alto
+            
+            // Normalizar entre 0 y 10
+            score = Math.max(0, Math.min(10, score));
+            
+            // Determinar categoría y color
+            let categoria, color;
+            if (score <= 2) {
+                categoria = "Ciencia rigurosa";
+                color = "#2c3e50";
+            } else if (score <= 4) {
+                categoria = "Divulgación legítima";
+                color = "#3498db";
+            } else if (score <= 6) {
+                categoria = "Especulación problemática";
+                color = "#f39c12";
+            } else if (score <= 8) {
+                categoria = "Oportunismo espiritual";
+                color = "#e74c3c";
+            } else {
+                categoria = "Fabricación total";
+                color = "#c0392b";
+            }
+            
+            // Mostrar resultados
+            mostrarResultadoIDE(score, categoria, color, texto, indicadores);
+        }
+        
+        // Función para mostrar resultados
+        function mostrarResultadoIDE(score, categoria, color, texto, indicadores) {
+            const resultadoDiv = document.getElementById('ideResult');
+            const scoreElement = document.getElementById('ideScore');
+            const indicator = document.getElementById('ideIndicator');
+            const categoryElement = document.getElementById('ideCategory');
+            const dimensionsElement = document.getElementById('ideDimensions');
+            const analysisElement = document.getElementById('ideAnalysis');
+            
+            // Actualizar resultados
+            scoreElement.textContent = score.toFixed(1) + "/10";
+            scoreElement.style.color = color;
+            
+            // Mover indicador en la barra (score * 10% del ancho)
+            indicator.style.left = `calc(${score * 10}% - 2px)`;
+            
+            // Actualizar categoría
+            categoryElement.textContent = categoria;
+            categoryElement.style.background = color + "40"; // 25% opacidad
+            categoryElement.style.color = color;
+            
+            // Generar dimensiones (simuladas para este ejemplo)
+            const dimensiones = [
+                { nombre: "Fidelidad matemática", valor: Math.max(1, 10 - score * 0.8) },
+                { nombre: "Contexto experimental", valor: Math.max(1, 10 - score * 0.9) },
+                { nombre: "Transparencia", valor: Math.max(2, 10 - score * 0.7) },
+                { nombre: "Literalización", valor: score * 0.9 },
+                { nombre: "Impacto público", valor: score * 0.7 }
+            ];
+            
+            dimensionsElement.innerHTML = dimensiones.map(dim => `
+                <div style="background: rgba(30, 41, 59, 0.8); padding: 15px; border-radius: 8px; border-left: 4px solid ${getColorForValue(dim.valor)};">
+                    <div style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 5px;">${dim.nombre}</div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="flex: 1; height: 8px; background: #334155; border-radius: 4px; overflow: hidden;">
+                            <div style="width: ${dim.valor * 10}%; height: 100%; background: ${getColorForValue(dim.valor)};"></div>
+                        </div>
+                        <span style="color: white; font-weight: bold; min-width: 30px;">${dim.valor.toFixed(1)}</span>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Análisis detallado
+            let analisis = `<p><strong>Texto analizado:</strong> "${texto.substring(0, 100)}${texto.length > 100 ? '...' : ''}"</p>`;
+            analisis += `<p><strong>Cálculo del IDE:</strong> ${score.toFixed(1)}/10</p>`;
+            analisis += `<p><strong>Interpretación:</strong> ${generarInterpretacion(score, categoria)}</p>`;
+            
+            if (indicadores.length > 0) {
+                analisis += `<p><strong>Indicadores detectados:</strong></p><ul>`;
+                indicadores.forEach(ind => {
+                    const efecto = ind.peso > 0 ? "↑ aumentó el IDE" : "↓ disminuyó el IDE";
+                    analisis += `<li>"${ind.palabra}" (x${ind.veces}): ${efecto}</li>`;
+                });
+                analisis += `</ul>`;
+            }
+            
+            analisis += `<p style="margin-top: 15px; color: #94a3b8; font-size: 0.9rem;">Nota: Este análisis es automático y simplificado. Para un análisis completo, consulta los criterios detallados en el ensayo.</p>`;
+            
+            analysisElement.innerHTML = analisis;
+            
+            // Mostrar resultado
+            resultadoDiv.style.display = 'block';
+            resultadoDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Función para cargar casos predefinidos
+        function cargarCasoPredefinido(casoKey) {
+            const caso = casosIDE[casoKey];
+            if (!caso) return;
+            
+            document.getElementById('ideTextInput').value = caso.texto;
+            mostrarResultadoIDE(caso.ide, caso.categoria, caso.color, caso.texto, []);
+            
+            // Actualizar análisis con datos específicos del caso
+            document.getElementById('ideAnalysis').innerHTML = `
+                <p><strong>Caso del ensayo:</strong> ${Object.keys(casosIDE).find(key => casosIDE[key] === caso)}</p>
+                <p>${caso.analisis}</p>
+                <p style="color: #94a3b8; font-size: 0.9rem;">Este análisis está basado en el estudio detallado realizado en los capítulos correspondientes del ensayo.</p>
+            `;
+        }
+        
+        // Función para cargar ejemplos rápidos
+        function cargarEjemplo(tipo) {
+            const ejemplos = {
+                ej1: "Tus pensamientos crean tu realidad cuántica. Visualiza lo que deseas y el universo responderá.",
+                ej2: "El campo cuántico conecta todas las almas en una red de conciencia universal interdimensional.",
+                ej3: "La observación en mecánica cuántica afecta al sistema observado bajo condiciones específicas de laboratorio."
+            };
+            
+            document.getElementById('ideTextInput').value = ejemplos[tipo];
+            analizarTextoIDE();
+        }
+        
+        // Función para generar selector de perfiles
+        function generarSelectorPerfiles() {
+            const selectorContainer = document.getElementById('profileSelector');
+            
+            selectorContainer.innerHTML = Object.keys(perfilesRadar).map(key => {
+                const perfil = perfilesRadar[key];
+                return `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="check_${key}" value="${key}" 
+                               ${['cientifico', 'comercial', 'digital'].includes(key) ? 'checked' : ''}>
+                        <label for="check_${key}" style="color: #cbd5e1; cursor: pointer;">
+                            <div style="width: 12px; height: 12px; border-radius: 2px; background: ${perfil.color}; display: inline-block; margin-right: 8px;"></div>
+                            ${perfil.nombre} <small style="color: #94a3b8;">(${perfil.ejemplo})</small>
+                        </label>
+                    </div>
+                `;
+            }).join('');
+            
+            // Configurar botón de comparación
+            document.getElementById('compareButton').addEventListener('click', function() {
+                const checks = document.querySelectorAll('#profileSelector input[type="checkbox"]:checked');
+                const seleccionados = Array.from(checks).map(c => c.value);
+                
+                if (seleccionados.length === 0) {
+                    document.getElementById('comparisonFeedback').textContent = "⚠️ Selecciona al menos un perfil.";
+                    document.getElementById('comparisonFeedback').style.color = '#f59e0b';
+                    document.getElementById('comparisonFeedback').style.display = 'block';
+                    return;
+                }
+                
+                if (seleccionados.length > 3) {
+                    document.getElementById('comparisonFeedback').textContent = "⚠️ Máximo 3 perfiles para comparar claramente.";
+                    document.getElementById('comparisonFeedback').style.color = '#f59e0b';
+                    document.getElementById('comparisonFeedback').style.display = 'block';
+                    return;
+                }
+                
+                document.getElementById('comparisonFeedback').textContent = `✅ Comparando ${seleccionados.length} perfil(es)...`;
+                document.getElementById('comparisonFeedback').style.color = '#10b981';
+                document.getElementById('comparisonFeedback').style.display = 'block';
+                
+                setTimeout(() => {
+                    crearRadar(seleccionados);
+                    document.getElementById('comparisonFeedback').style.display = 'none';
+                }, 500);
+            });
+        }
+        
+        // Función para generar leyenda de dimensiones
+        function generarLeyendaRadar() {
+            const legendContainer = document.getElementById('legendRadar');
+            
+            legendContainer.innerHTML = dimensionesRadar.map((dim, index) => `
+                <div class="legend-item">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(45deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                        ${index + 1}
+                    </div>
+                    <div class="legend-text">
+                        <div class="legend-range">${dim.nombre}</div>
+                        <div class="legend-desc">${dim.desc}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Funciones auxiliares
+        function getColorForValue(valor) {
+            if (valor <= 2) return "#2c3e50";
+            if (valor <= 4) return "#3498db";
+            if (valor <= 6) return "#f39c12";
+            if (valor <= 8) return "#e74c3c";
+            return "#c0392b";
+        }
+        
+        function generarInterpretacion(score, categoria) {
+            const interpretaciones = {
+                "Ciencia rigurosa": "El discurso muestra fidelidad al método científico, uso apropiado de terminología y contexto experimental claro.",
+                "Divulgación legítima": "Comunicación pedagógica efectiva que, aunque puede usar metáforas, preserva el núcleo científico y no induce a error.",
+                "Especulación problemática": "Analogías interesantes pero que cruzan límites epistemológicos sin suficiente evidencia. Riesgo de confundir metáfora con realidad.",
+                "Oportunismo espiritual": "Uso estratégico del lenguaje científico para dar autoridad a afirmaciones espirituales o de autoayuda. Descontextualización significativa.",
+                "Fabricación total": "Creación deliberada de narrativas pseudocientíficas. Términos científicos vaciados de contenido y presentados como mecanismos mágicos."
+            };
+            
+            return interpretaciones[categoria] || "Análisis no disponible para esta categoría.";
+        }
+        
+        // ================================================
+        // FUNCIONES PARA MODALES
+        // ================================================
+        
+        function mostrarModalPais(paisData) {
+            const modalHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px;">
+                    <div style="background: #1e293b; padding: 30px; border-radius: 15px; max-width: 600px; width: 100%; border: 2px solid ${getColorForMap(paisData.ide_promedio)}; box-shadow: 0 20px 60px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #3b82f6; padding-bottom: 15px;">
+                            <div>
+                                <h3 style="margin: 0; color: #3b82f6; font-family: 'Playfair Display', serif;">🗺️ ${paisData.pais}</h3>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                                    <div style="width: 20px; height: 20px; border-radius: 4px; background: ${getColorForMap(paisData.ide_promedio)}; border: 2px solid white;"></div>
+                                    <span style="font-weight: bold; color: #fff;">IDE promedio: ${paisData.ide_promedio}/10</span>
+                                </div>
+                            </div>
+                            <button onclick="this.parentElement.parentElement.parentElement.remove()" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-family: 'Crimson Pro', serif;">✕ Cerrar</button>
+                        </div>
+                        
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="color: #10b981; margin-bottom: 10px; font-family: 'Crimson Pro', serif;">📌 Característica regional:</h4>
+                            <p style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-left: 4px solid #10b981;">${paisData.caracteristica}</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="color: #f59e0b; margin-bottom: 10px; font-family: 'Crimson Pro', serif;">👥 Casos emblemáticos:</h4>
+                            <ul style="padding-left: 20px;">
+                                ${paisData.casos.map(caso => `<li style="margin-bottom: 8px; color: #cbd5e1;">${caso}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="color: #8b5cf6; margin-bottom: 10px; font-family: 'Crimson Pro', serif;">📖 Referencia en el ensayo:</h4>
+                            <p style="color: #cbd5e1; padding: 12px; background: rgba(139, 92, 246, 0.1); border-radius: 8px; border-left: 4px solid #8b5cf6;">
+                                ${paisData.cap}
+                            </p>
+                        </div>
+                        
+                        <div style="background: rgba(59, 130, 246, 0.1); padding: 20px; border-radius: 10px; margin-top: 20px;">
+                            <h4 style="color: #3b82f6; margin-bottom: 10px; font-family: 'Crimson Pro', serif;">📊 Análisis regional:</h4>
+                            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6;">
+                                ${generarAnalisisRegional(paisData)}
+                            </p>
+                        </div>
+                        
+                        <p style="margin-top: 20px; color: #64748b; font-size: 0.9rem; text-align: center; border-top: 1px solid #334155; padding-top: 15px;">
+                            ℹ️ Los datos reflejan análisis cultural del ensayo "El Síntoma Cuántico"
+                        </p>
+                    </div>
+                </div>
+            `;
+            
+            const modal = document.createElement('div');
+            modal.innerHTML = modalHTML;
+            document.body.appendChild(modal);
+        }
+        
+        function mostrarModalHito(hitoData) {
+            const modalHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px;">
+                    <div style="background: #1e293b; padding: 30px; border-radius: 15px; max-width: 600px; width: 100%; border: 2px solid ${coloresTipo[hitoData.tipo]}; box-shadow: 0 20px 60px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid ${coloresTipo[hitoData.tipo]}; padding-bottom: 15px;">
+                            <div>
+                                <h3 style="margin: 0; color: ${coloresTipo[hitoData.tipo]}; font-family: 'Playfair Display', serif;">
+                                    ${hitoData.icono} ${hitoData.año}: ${hitoData.evento}
+                                </h3>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                                    <div style="width: 20px; height: 20px; border-radius: 4px; background: ${coloresTipo[hitoData.tipo]}; border: 2px solid white;"></div>
+                                    <span style="font-weight: bold; color: #fff;">Impacto: ${hitoData.impacto}/10</span>
+                                    <span style="color: #94a3b8; margin-left: 15px;">Tipo: ${hitoData.tipo}</span>
+                                </div>
+                            </div>
+                            <button onclick="this.parentElement.parentElement.parentElement.remove()" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-family: 'Crimson Pro', serif;">✕ Cerrar</button>
+                        </div>
+                        
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="color: #10b981; margin-bottom: 10px; font-family: 'Crimson Pro', serif;">📖 Descripción:</h4>
+                            <p style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; line-height: 1.6;">${hitoData.desc}</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 25px;">
+                            <h4 style="color: #f59e0b; margin-bottom: 10px; font-family: 'Crimson Pro', serif;">📚 Contexto histórico:</h4>
+                            <p style="color: #cbd5e1; line-height: 1.6;">${obtenerContextoHistorico(hitoData.año)}</p>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #334155;">
+                            <div>
+                                <span style="color: #64748b; font-size: 0.9rem;">⏳ Hito #${hitos.findIndex(h => h === hitoData) + 1} de ${hitos.length}</span>
+                            </div>
+                            <div>
+                                ${hitoData.año < 2024 ? 
+                                    '<span style="color: #10b981; font-size: 0.9rem;">✅ Evento histórico</span>' : 
+                                    '<span style="color: #f59e0b; font-size: 0.9rem;">🔮 Proyección futura</span>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const modal = document.createElement('div');
+            modal.innerHTML = modalHTML;
+            document.body.appendChild(modal);
+        }
+        
+        // ================================================
+        // FUNCIONES AUXILIARES
+        // ================================================
+        
+        function obtenerContextoHistorico(año) {
+            const contextos = {
+                1927: "Período de entreguerras. La física cuántica emerge en un contexto de profunda transformación científica y cultural. Europa es el centro del mundo intelectual.",
+                1960: "Post-guerra, baby boom, contracultura incipiente. Creciente desconfianza hacia el establishment y búsqueda de espiritualidades alternativas.",
+                1975: "Apogeo de la contracultura, crisis del petróleo, fin de la guerra de Vietnam. La espiritualidad oriental y las psicodélicas son mainstream.",
+                1990: "Caída del muro de Berlín, globalización, auge de internet. El pensamiento posmoderno cuestiona los grandes relatos, incluida la ciencia.",
+                2000: "Burbuja punto com, cultura del emprendimiento, auge del neoliberalismo. El 'yo' como proyecto de optimización constante.",
+                2010: "Redes sociales, smartphones, economía de la atención. La información se atomiza y viraliza.",
+                2020: "Pandemia, aceleración digital, crisis de sentido. Auge del wellness digital y las soluciones mágicas a problemas complejos.",
+                2023: "IA generativa, desinformación a escala, fatiga digital. El contenido se produce masivamente, diluyendo las fronteras entre información y desinformación."
+            };
+            
+            // Encontrar el contexto más cercano
+            const años = Object.keys(contextos).map(Number);
+            const añoCercano = años.reduce((prev, curr) => Math.abs(curr - año) < Math.abs(prev - año) ? curr : prev);
+            
+            return contextos[añoCercano] || "Contexto histórico general del período.";
+        }
+        
+        function generarAnalisisRegional(paisData) {
+            const analisis = {
+                "Argentina": "El síntoma en Argentina adopta un carácter profundamente sincrético, fusionando elementos del catolicismo popular con la new age y el discurso cuántico. Esto responde a una búsqueda de sentido en contextos de crisis económicas recurrentes y desconfianza institucional.",
+                "Estados Unidos": "Como cuna del 'síntoma', EEUU muestra la mercantilización más avanzada. La espiritualidad cuántica se integra al modelo de negocio del wellness, creando un mercado global donde el discurso científico es instrumentalizado para fines comerciales.",
+                "India": "La física cuántica regresa a India con credenciales occidentales, creando una 'espiritualidad científica' que valida tradiciones locales para una clase media globalizada. Es un ejemplo de reimportación cultural con valor agregado de prestigio.",
+                "Alemania": "El síntoma alemán se caracteriza por su sistematicidad casi burocrática. Se ofrecen certificados, cursos estructurados y sistemas cerrados de pensamiento que atraen a profesionales que buscan espiritualidad sin abandonar el rigor aparente.",
+                "Brasil": "La plasticidad sincrética brasileña absorbe el síntoma sin trauma, mezclándolo con espiritismo, candomblé y teología de la prosperidad. La pregunta pragmática '¿funciona?' domina sobre la coherencia epistemológica.",
+                "Rusia": "Tras el colapso del materialismo dialéctico soviético, el síntoma ofrece un nuevo metarrelato totalizador. La cuántica se fusiona con el misticismo eslavo, creando sistemas como el 'Transurfing' que prometen control mágico sobre una realidad percibida como caótica."
+            };
+            
+            return analisis[paisData.pais] || `El síntoma cuántico en ${paisData.pais} presenta características únicas que reflejan su contexto histórico, social y cultural específico.`;
+        }
+        
+        // ================================================
         // INICIALIZACIÓN
         // ================================================
         
@@ -1013,6 +2376,9 @@
             window.addEventListener('resize', function() {
                 Plotly.Plots.resize(document.getElementById('plot3d'));
                 Plotly.Plots.resize(document.getElementById('plotSankey'));
+                if (mapaCreado) Plotly.Plots.resize(document.getElementById('plotMapa'));
+                if (timelineCreado) Plotly.Plots.resize(document.getElementById('plotTimeline'));
+                if (radarCreado) Plotly.Plots.resize(document.getElementById('plotRadar'));
             });
             
             // Interactividad para el gráfico 3D
